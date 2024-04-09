@@ -13,16 +13,38 @@ func newElement(n *big.Int, p *big.Int) Element {
 	return Element{n, p}
 }
 
-func add(e1 Element, e2 Element) Element {
+func Add(e1 Element, e2 Element) Element {
 	num := new(big.Int)
 	num.Add(e1.num, e2.num)
 	num.Mod(num, e1.prime)
 	return Element{num, e1.prime}
 }
 
-func sub(e1 Element, e2 Element) Element {
+func Sub(e1 Element, e2 Element) Element {
 	num := new(big.Int)
 	num.Sub(e1.num, e2.num)
+	num.Mod(num, e1.prime)
+	return Element{num, e1.prime}
+}
+
+func Mul(e1 Element, e2 Element) Element {
+	num := new(big.Int)
+	num.Mul(e1.num, e2.num)
+	num.Mod(num, e1.prime)
+	return Element{num, e1.prime}
+}
+
+func Pow(e Element, n big.Int) Element {
+	num := new(big.Int)
+	num.Exp(e.num, &n, e.prime)
+	return Element{num, e.prime}
+}
+
+func Div(e1 Element, e2 Element) Element {
+	inv := new(big.Int)
+	inv.ModInverse(e2.num, e1.prime)
+	num := new(big.Int)
+	num.Mul(e1.num, inv)
 	num.Mod(num, e1.prime)
 	return Element{num, e1.prime}
 }
