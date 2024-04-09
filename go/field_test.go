@@ -35,11 +35,26 @@ func TestAddition(t *testing.T) {
 	y1 := Element{big.NewInt(0), big.NewInt(13)}
 	y2 := Element{big.NewInt(1), big.NewInt(13)}
 
-	if !equal(add(a, b), y1) {
+	if !equal(Add(a, b), y1) {
 		t.Fatal("Addition not working correctly")
 	}
 
-	if !equal(sub(a, b), y2) {
+	if !equal(Sub(a, b), y2) {
 		t.Fatal("Subtraction not working correctly")
+	}
+}
+
+func TestMultiplication(t *testing.T) {
+	a := Element{big.NewInt(3), big.NewInt(31)}
+	b := Element{big.NewInt(24), big.NewInt(31)}
+	y1 := Element{big.NewInt(10), big.NewInt(31)}
+	y2 := Element{big.NewInt(4), big.NewInt(31)}
+
+	if !equal(Mul(a, b), y1) {
+		t.Fatal("Multiplication not working correctly")
+	}
+
+	if !equal(Div(a, b), y2) {
+		t.Fatal("Division not working correctly")
 	}
 }
