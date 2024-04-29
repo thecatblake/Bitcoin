@@ -6,8 +6,20 @@
 #define BITCOIN_UTILS_H
 
 #include <openssl/ssl.h>
+#include <secp256k1.h>
+#include <iostream>
+#include <format>
+#include <sstream>
+#include <string>
+
 int sha256(unsigned char* message, size_t message_len, unsigned char* digest);
 int hash256(unsigned char* message, size_t message_len, unsigned char* digest);
+int ripemd160(unsigned char* message, size_t message_len, unsigned char* digest);
+int hash160(unsigned char* message, size_t message_len, unsigned char* digest);
+secp256k1_context* create_randomized_context();
+
+#define COMPRESSED_SEC_SIZE 33
+#define UNCOMPRESSED_SEC_SIZE 65
 
 /*************************************************************************
  * Copyright (c) 2020-2021 Elichai Turkel                                *
@@ -44,11 +56,6 @@ int hash256(unsigned char* message, size_t message_len, unsigned char* digest);
 #else
 #error "Couldn't identify the OS"
 #endif
-
-#include <stddef.h>
-#include <limits.h>
-#include <stdio.h>
-#include <cstring>
 
 
 /* Returns 1 on success, and 0 on failure. */
@@ -90,6 +97,16 @@ static void print_hex(unsigned char* data, size_t size) {
     printf("\n");
 }
 
+static std::string string_hex(unsigned char* data, size_t size) {
+    size_t i;
+    std::stringstream buffer;
+    buffer << "0x";
+    for (i = 0; i < size; i++) {
+        buffer << std::format("{:02x}", data[i]);
+    }
+    return buffer.str();
+}
+
 #if defined(_MSC_VER)
 // For SecureZeroMemory
 #include <Windows.h>
@@ -117,6 +134,24 @@ static void secure_erase(void *ptr, size_t len) {
     void *(*volatile const volatile_memset)(void *, int, size_t) = memset;
     volatile_memset(ptr, 0, len);
 #endif
+}
+
+[[nodiscard]] inline bool ContainsNoNUL(std::string_view str) noexcept
+{
+    for (auto c : str) {
+        if (c == 0) return false;
+    }
+    return true;
+}
+
+[[nodiscard]] inline std::string_view TrimStringView(std::string_view str, std::string_view pattern = " \f\n\r\t\v")
+{
+    std::string::size_type front = str.find_first_not_of(pattern);
+    if (front == std::string::npos) {
+        return {};
+    }
+    std::string::size_type end = str.find_last_not_of(pattern);
+    return str.substr(front, end - front + 1);
 }
 
 #endif //BITCOIN_UTILS_H
