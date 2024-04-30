@@ -9,10 +9,12 @@
 
 struct TxIn {
     TxIn();
+    std::string toString();
 };
 
 struct TxOut {
     TxOut();
+    std::string toString();
 };
 
 class Tx {
@@ -23,6 +25,11 @@ public:
     std::vector<TxOut> outputs;
     const int32_t version;
     const uint32_t lockTime;
+
+    std::string toString();
+
+    std::vector<unsigned char> serialize();
+    static Tx parse(std::vector<unsigned char> serialization);
 };
 
 #endif //BITCOIN_TX_H

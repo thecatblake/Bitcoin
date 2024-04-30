@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "base58.h"
 #include "address.h"
+#include "Tx.h"
 
 
 TEST(Serialization, SEC_uncompressed) {
@@ -121,4 +122,72 @@ TEST(Serialization, address_compressed_mainnet) {
     EXPECT_EQ(address, "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1");
 
     secp256k1_context_destroy(ctx);
+}
+
+TEST(Utils, varint) {
+    uint256 i;
+    i.SetHex("0x10603eedc76d");
+    std::vector<unsigned char> encoded = encode_varint(i);
+    std::vector<unsigned char> encoded_t = {
+            255, 109, 199, 237, 62, 96, 16, 0, 0
+    };
+    for(auto j=0; j < encoded.size(); j++) {
+        ASSERT_EQ(encoded[j], encoded_t[j]);
+    }
+    auto decoded = decode_varint(&encoded[0]);
+    EXPECT_EQ(i, decoded);
+
+    i.SetHex("0x64");
+    encoded = encode_varint(i);
+    encoded_t = {
+            0x64
+    };
+    for(auto j=0; j < encoded.size(); j++) {
+        ASSERT_EQ(encoded[j], encoded_t[j]);
+    }
+    decoded = decode_varint(&encoded[0]);
+    EXPECT_EQ(i, decoded);
+
+    i.SetHex("0xff");
+    encoded = encode_varint(i);
+    encoded_t = {
+            0xfd, 0xff, 0x00
+    };
+    for(auto j=0; j < encoded.size(); j++) {
+        ASSERT_EQ(encoded[j], encoded_t[j]);
+    }
+    decoded = decode_varint(&encoded[0]);
+    EXPECT_EQ(i, decoded);
+
+    i.SetHex("0x22b");
+    encoded = encode_varint(i);
+    encoded_t = {
+            0xfd, 0x2b, 0x02
+    };
+    for(auto j=0; j < encoded.size(); j++) {
+        ASSERT_EQ(encoded[j], encoded_t[j]);
+    }
+    decoded = decode_varint(&encoded[0]);
+    EXPECT_EQ(i, decoded);
+
+    i.SetHex("0x1117f");
+    encoded = encode_varint(i);
+    encoded_t = {
+            0xfe, 0x7f, 0x11, 0x01, 0x00
+    };
+    for(auto j=0; j < encoded.size(); j++) {
+        ASSERT_EQ(encoded[j], encoded_t[j]);
+    }
+    decoded = decode_varint(&encoded[0]);
+    EXPECT_EQ(i, decoded);
+}
+
+
+TEST(Transaction, parse) {
+    std::vector<unsigned char> tx_raw = {
+            02, 00, 00, 00
+    };
+    auto tx = Tx::parse(tx_raw);
+
+    EXPECT_EQ(tx.version, 2);
 }

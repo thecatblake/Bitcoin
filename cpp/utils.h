@@ -11,12 +11,16 @@
 #include <format>
 #include <sstream>
 #include <string>
+#include "uint256.h"
 
 int sha256(unsigned char* message, size_t message_len, unsigned char* digest);
 int hash256(unsigned char* message, size_t message_len, unsigned char* digest);
 int ripemd160(unsigned char* message, size_t message_len, unsigned char* digest);
 int hash160(unsigned char* message, size_t message_len, unsigned char* digest);
 secp256k1_context* create_randomized_context();
+
+uint256 decode_varint(unsigned char* s);
+std::vector<unsigned char> encode_varint(uint256 i);
 
 #define COMPRESSED_SEC_SIZE 33
 #define UNCOMPRESSED_SEC_SIZE 65

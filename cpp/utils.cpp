@@ -68,3 +68,45 @@ secp256k1_context *create_randomized_context() {
 
     return ctx;
 }
+
+uint256 decode_varint(unsigned char *s) {
+    uint256 i;
+    switch (s[0]) {
+        case 0xfd:
+            memcpy((unsigned char*)&i, s+1, 2);
+            break;
+        case 0xfe:
+            memcpy((unsigned char*)&i, s+1, 4);
+            break;
+        case 0xff:
+            memcpy((unsigned char*)&i, s+1, 8);
+            break;
+        default:
+            memcpy((unsigned char*)&i, s, 1);
+            break;
+    }
+
+    return i;
+}
+
+std::vector<unsigned char> encode_varint(uint256 i) {
+    std::vector<unsigned char> s;
+    unsigned char* data = i.data();
+    if (data[4] > 0) {
+        s.resize(8+1);
+        s[0] = 0xff;
+        memcpy(&s[1], data, 8);
+    } else if (data[2] > 0) {
+        s.resize(4+1);
+        s[0] = 0xfe;
+        memcpy(&s[1], data, 4);
+    } else if (data[0] >= 0xfd || data[1] > 0) {
+        s.resize(2+1);
+        s[0] = 0xfd;
+        memcpy(&s[1], data, 2);
+    } else {
+        s.resize(1);
+        memcpy(&s[0], data, 1);
+    }
+    return s;
+}
