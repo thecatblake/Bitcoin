@@ -69,20 +69,24 @@ secp256k1_context *create_randomized_context() {
     return ctx;
 }
 
-uint256 decode_varint(unsigned char *s) {
+uint256 decode_varint(unsigned char *s, int* len) {
     uint256 i;
     switch (s[0]) {
         case 0xfd:
             memcpy((unsigned char*)&i, s+1, 2);
+            *len = 3;
             break;
         case 0xfe:
             memcpy((unsigned char*)&i, s+1, 4);
+            *len = 5;
             break;
         case 0xff:
             memcpy((unsigned char*)&i, s+1, 8);
+            *len = 9;
             break;
         default:
             memcpy((unsigned char*)&i, s, 1);
+            *len = 1;
             break;
     }
 

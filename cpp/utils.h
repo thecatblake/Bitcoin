@@ -19,7 +19,7 @@ int ripemd160(unsigned char* message, size_t message_len, unsigned char* digest)
 int hash160(unsigned char* message, size_t message_len, unsigned char* digest);
 secp256k1_context* create_randomized_context();
 
-uint256 decode_varint(unsigned char* s);
+uint256 decode_varint(unsigned char* s, int* len);
 std::vector<unsigned char> encode_varint(uint256 i);
 
 #define COMPRESSED_SEC_SIZE 33

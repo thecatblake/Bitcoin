@@ -3,6 +3,7 @@
 //
 
 #include "Tx.h"
+#include "utils.h"
 #include <format>
 
 TxIn::TxIn() {
@@ -43,6 +44,14 @@ std::vector<unsigned char> Tx::serialize() {
 
 Tx Tx::parse(std::vector<unsigned char> serialization) {
     Tx tx;
-    memcpy((unsigned char*)&tx.version, &serialization[0], 4);
+    size_t i = 0;
+    memcpy((unsigned char*)&tx.version, &serialization[i], 4);
+    i += 4;
+    int var_len;
+    auto num_inp = decode_varint(&serialization[i], &var_len);
+    i += var_len;
+    long long n;
+    memcpy((unsigned char*)&n, num_inp.data(), sizeof(long long));
+    tx.inputs.resize(n);
     return tx;
 }
