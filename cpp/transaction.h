@@ -2,14 +2,19 @@
 // Created by ryousuke kaga on 2024/04/28.
 //
 
-#ifndef BITCOIN_TX_H
-#define BITCOIN_TX_H
+#ifndef BITCOIN_TRANSACTION_H
+#define BITCOIN_TRANSACTION_H
 
 #include <vector>
 
 struct TxIn {
+    unsigned char prev_tx[32];
+    uint32_t prev_index;
+    std::vector<unsigned char> script_raw;
+
     TxIn();
     std::string toString();
+    static TxIn parse(unsigned char* serialization, int* len);
 };
 
 struct TxOut {
@@ -17,10 +22,10 @@ struct TxOut {
     std::string toString();
 };
 
-class Tx {
+class transaction {
 public:
     static const int32_t CURRENT_VERSION = 2;
-    Tx();
+    transaction();
     std::vector<TxIn> inputs;
     std::vector<TxOut> outputs;
     const int32_t version;
@@ -29,7 +34,7 @@ public:
     std::string toString();
 
     std::vector<unsigned char> serialize();
-    static Tx parse(std::vector<unsigned char> serialization);
+    static transaction parse(std::vector<unsigned char> serialization);
 };
 
-#endif //BITCOIN_TX_H
+#endif //BITCOIN_TRANSACTION_H

@@ -25,8 +25,8 @@ add_library(bitcoin utils.cpp
         span.h
         address.cpp
         address.h
-        Tx.cpp
-        Tx.h)
+        transaction.cpp
+        transaction.h)
 target_link_libraries(bitcoin secp256k1 crypto ssl)
 
 add_executable(test test.cpp)
