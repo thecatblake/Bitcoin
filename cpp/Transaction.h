@@ -10,7 +10,7 @@
 struct TxIn {
     unsigned char prev_tx[32];
     uint32_t prev_index;
-    std::vector<unsigned char> script_raw;
+    std::vector<unsigned char> scriptSig_raw;
     uint32_t nSequence;
 
     TxIn();
@@ -20,17 +20,17 @@ struct TxIn {
 
 struct TxOut {
     int64_t amount;
-    std::vector<unsigned char> script_raw;
+    std::vector<unsigned char> scriptPubKy_raw;
 
     TxOut();
     std::string toString();
     static TxOut parse(unsigned char* serialization, long long* len);
 };
 
-class transaction {
+class Transaction {
 public:
     static const int32_t CURRENT_VERSION = 2;
-    transaction();
+    Transaction();
     std::vector<TxIn> inputs;
     std::vector<TxOut> outputs;
     const int32_t version;
@@ -39,7 +39,7 @@ public:
     std::string toString();
 
     std::vector<unsigned char> serialize();
-    static transaction parse(std::vector<unsigned char> serialization);
+    static Transaction parse(std::vector<unsigned char> serialization);
     uint64_t GetOutAmount();
 };
 

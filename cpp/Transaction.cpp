@@ -2,7 +2,7 @@
 // Created by ryousuke kaga on 2024/04/28.
 //
 
-#include "transaction.h"
+#include "Transaction.h"
 #include "utils.h"
 #include <format>
 
@@ -26,8 +26,8 @@ TxIn TxIn::parse(unsigned char* serialization, long long *len) {
     long long script_size;
     memcpy((unsigned char*)&script_size, _script_size.data(), sizeof(script_size));
     i += var_len;
-    txin.script_raw.resize(script_size);
-    std::copy(serialization+i, serialization+i+script_size, txin.script_raw.begin());
+    txin.scriptSig_raw.resize(script_size);
+    std::copy(serialization+i, serialization+i+script_size, txin.scriptSig_raw.begin());
     i += script_size;
     memcpy((unsigned char*)&txin.nSequence, serialization+i, sizeof(txin.nSequence));
     i += sizeof(txin.nSequence);
@@ -53,18 +53,18 @@ TxOut TxOut::parse(unsigned char *serialization, long long *len) {
     long long script_size;
     memcpy((unsigned char*)&script_size, _script_size.data(), sizeof(script_size));
     i += var_len;
-    txout.script_raw.resize(script_size);
-    std::copy(serialization+i, serialization+i+script_size, txout.script_raw.begin());
+    txout.scriptPubKy_raw.resize(script_size);
+    std::copy(serialization+i, serialization+i+script_size, txout.scriptPubKy_raw.begin());
     i += script_size;
     *len = i;
     return txout;
 }
 
-transaction::transaction(): version(1), lockTime(0) {
+Transaction::Transaction(): version(1), lockTime(0) {
 
 }
 
-std::string transaction::toString() {
+std::string Transaction::toString() {
     std::string tx_ins;
     for (auto& input : inputs) {
         tx_ins += input.toString() + "\n";
@@ -76,12 +76,12 @@ std::string transaction::toString() {
     return std::format("tx: \nversion: {}\ntx_ins:\n{}tx_outs:\n{}locktime: {}", version, tx_ins, tx_outs, lockTime);
 }
 
-std::vector<unsigned char> transaction::serialize() {
+std::vector<unsigned char> Transaction::serialize() {
     return std::vector<unsigned char>();
 }
 
-transaction transaction::parse(std::vector<unsigned char> serialization) {
-    transaction tx;
+Transaction Transaction::parse(std::vector<unsigned char> serialization) {
+    Transaction tx;
     size_t i = 0;
     memcpy((unsigned char*)&tx.version, &serialization[i], 4);
     i += 4;
@@ -111,7 +111,7 @@ transaction transaction::parse(std::vector<unsigned char> serialization) {
     return tx;
 }
 
-uint64_t transaction::GetOutAmount() {
+uint64_t Transaction::GetOutAmount() {
     uint64_t amount = 0;
     for(const auto& output: outputs) {
         amount += output.amount;
