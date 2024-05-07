@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 include_directories(/opt/homebrew/include/)
 include_directories(/usr/local/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(/usr/local/lib)
 
 include(FetchContent)
@@ -26,7 +27,8 @@ add_library(bitcoin utils.cpp
         address.cpp
         address.h
         transaction.cpp
-        transaction.h)
+        transaction.h
+)
 target_link_libraries(bitcoin secp256k1 crypto ssl)
 
 add_executable(test test.cpp)
