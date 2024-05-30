@@ -18,7 +18,12 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    unsigned char pubkey_compressed[33];
+    size_t len = sizeof(pubkey_compressed);
+    secp256k1_ec_pubkey_serialize(ctx, pubkey_compressed, &len, &pubkey, SECP256K1_EC_COMPRESSED);
+
     std::cout << "Secret key: " << string_hex(hash, 32) << std::endl;
+    std::cout << "Compressed Public key: " << string_hex(pubkey_compressed, len) << std::endl;
     std::cout << "Address: " << GetAddress(ctx, &pubkey, true, false) << std::endl;
     return 0;
 }
