@@ -7,6 +7,7 @@
 #include "base58.h"
 #include "address.h"
 #include "Transaction.h"
+#include "stream.h"
 
 
 TEST(Serialization, SEC_uncompressed) {
@@ -214,4 +215,28 @@ TEST(Transaction, out_amount) {
     Transaction tx = Transaction::parse(tx_raw);
 
     EXPECT_EQ(tx.GetOutAmount(), 42465594);
+}
+
+TEST(Stream, read_and_write) {
+    Stream s({});
+    std::deque<unsigned char> add = {5, 6, 7, 8};
+    s.write(add);
+    std::deque<unsigned char> read = s.read(add.size());
+    EXPECT_EQ(add, read);
+}
+
+TEST(Stream, int_read_and_write) {
+    Stream s({});
+    s.writeInt(4);
+    int x = s.readInt();
+    EXPECT_EQ(x, 4);
+}
+
+TEST(Stream, uint256_read_and_write) {
+    Stream s({});
+    uint256 i;
+    i.SetHex("0x1117f");
+    s.writeUint256(i);
+    uint256 r = s.readUint256();
+    EXPECT_EQ(i, r);
 }

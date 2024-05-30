@@ -30,6 +30,8 @@ add_library(bitcoin utils.cpp
         Transaction.h
         script.cpp
         script.h
+        stream.cpp
+        stream.h
 )
 target_link_libraries(bitcoin secp256k1 crypto ssl)
 
